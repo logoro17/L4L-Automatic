@@ -1,0 +1,30 @@
+# Lingkungan Virtual (Virtual Environments)
+venv/
+.venv/
+env/
+bin/
+lib/
+include/
+L4L/
+profiles.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribusi / Paket
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+
