@@ -97,9 +97,9 @@ Select Platform: Choose between YouTube, Twitter, or Instagram.
         [1] Normal: Dashboard view with progress bar.
         [2] Debug: Detailed logs for troubleshooting.
 
-    Set Target		: Input how many likes/points you want to earn (Default: 100).
-    Login		: If it's your first time, the browser will open. Log in to Like4Like manually. The bot will save your cookies for next time.
-    To Stop the Bot	: Press the Esc key on your keyboard.**
+Set Target		: Input how many likes/points you want to earn (Default: 100).
+Login			: If it's your first time, the browser will open. Log in to Like4Like manually. The bot will save your cookies for next time.
+To Stop the Bot	: Press the Esc key on your keyboard.**
     
 ## ⚠️ Disclaimer
 This tool is for educational purposes only. Automating actions on social media platforms may violate their Terms of Service. The author is not responsible for any consequences resulting from the use of this tool. Use responsibly and do not abuse the system.
