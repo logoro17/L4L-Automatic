@@ -1,3 +1,12 @@
+```
+  _      _  _     _                   _         _        ____        _       
+ | |    | || |   | |                 / \  _   _| |_ ___ | __ )  ___ | |_ ___ 
+ | |    | || |_  | |      ______    / _ \| | | | __/ _ \|  _ \ / _ \| __/ __|
+ | |___ |__   _| | |___  |______|  / ___ \ |_| | || (_) | |_) | (_) | |_\__ \\
+ |_____|   |_|   |_____|          /_/   \_\__,_|\__\___/|____/ \___/ \__|___/
+                                                          
+```
+
 # L4L-AutoBot 🤖
 
 A robust, stealthy, and fully automated Python bot for **Like4Like.org**. Built with Selenium and Python, designed to handle YouTube, Instagram, and Twitter interactions with human-like behavior to avoid detection.
@@ -34,7 +43,7 @@ A robust, stealthy, and fully automated Python bot for **Like4Like.org**. Built 
 
 1.  **Clone the Repository**
     ```bash
-    git clone [https://github.com/logoro17/L4L-AutoBot.git](https://github.com/logoro17/L4L-AutoBot.git)
+    git clone [https://github.com/logoro17/L4L-AutoBot.git]
     cd L4L-AutoBot
     ```
 
