@@ -28,3 +28,10 @@ var/
 wheels/
 *.egg-info/
 
+# Additional Resource
+bot.py
+bot-v1.py
+bot-youtube.py
+L4L/
+profiles.json
+session_cookies.json
