@@ -27,6 +27,7 @@ sdist/
 var/
 wheels/
 *.egg-info/
+release.sh
 
 # Additional Resource
 bot.py

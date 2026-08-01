@@ -32,6 +32,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
 try:
     from pynput import keyboard
@@ -42,9 +43,9 @@ except ImportError:
 
 G, R, Y, C, W, B = '\033[92m', '\033[91m', '\033[93m', '\033[96m', '\033[0m', '\033[94m'
 
-DATA_FILE 	= "profiles.json"		// PROFILES PATH FOR YOUR BROWSER
-COOKIE_FILE 	= "session_cookies.json"	// SESSION FOR LIKE4LIKE.ORG
-ERROR_IMG 	= "error_snapshot.png"		// ERROR log
+DATA_FILE 	= "profiles.json"		# // PROFILES PATH FOR YOUR BROWSER
+COOKIE_FILE 	= "session_cookies.json"	# // SESSION FOR LIKE4LIKE.ORG
+ERROR_IMG 	= "error_snapshot.png"		# // ERROR log
 
 STOP_BOT = False
 
@@ -133,7 +134,7 @@ def load_data():
         sys.exit()
         
     try:
-        with open(DATA_FILE, "r") as f:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
         print(f"\n{R}[!] FATAL ERROR: '{DATA_FILE}' is not valid JSON.{W}")
@@ -146,14 +147,15 @@ def show_banner(data, mode_text="STABLE RELEASE"):
     except:
         active_name = "Unknown"
 
-    print(f"""{G}
-  _      _  _     _                   _         _        ____        _       
- | |    | || |   | |                 / \  _   _| |_ ___ | __ )  ___ | |_ ___ 
- | |    | || |_  | |      ______    / _ \| | | | __/ _ \|  _ \ / _ \| __/ __|
- | |___ |__   _| | |___  |______|  / ___ \ |_| | || (_) | |_) | (_) | |_\__ \\
- |_____|   |_|   |_____|          /_/   \_\__,_|\__\___/|____/ \___/ \__|___/
-                                                          
-           -- Created By LoGoRo17 --{W}""")
+    # Ditambahkan 'rf' agar backslash pada ASCII art tidak memicu SyntaxWarning
+    print(rf"""{G}
+  _       _  _     _                   _         _        ____        _        
+ | |     | || |   | |                 / \  _   _| |_ ___ |  _ \ ___  | |_ ___ 
+ | |     | || |_  | |      ______    / _ \| | | | __/ _ \| |_) / _ \ | __/ __|
+ | |___  |__   _| | |___  |______|  / ___ \ |_| | || (_) |  _ <  __/ | |_\__ \
+ |_____|    |_|   |_____|          /_/   \_\__,_|\__\___/|_| \_\___|  \__|___/
+                                                                               
+            -- Created By LoGoRo17 --{W}""")
     print(f"{C}Version: {Y}v1.0.0{W} | {G}Mode: {mode_text}{W}")
     print(f"{C}Active : {Y}{active_name}{W}")
     print(f"{C}Info   : {R}Press 'Esc' to STOP safely.{W}")
@@ -297,22 +299,39 @@ def auto_earn_logic(driver, social_name, debug_mode, target_limit):
 
             if STOP_BOT: break
 
-            if debug_mode: print(f"{Y}[*] Confirming...{W}")
+            if debug_mode: 
+                print(f"{Y}[*] Confirming...{W}")
             try:
-                confirm_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.pulse-checkBox img[alt*='Confirm'], a.pulse-checkBox[onclick*='confirm']")))
+                confirm_btn = wait.until(
+                    EC.presence_of_element_located((
+                        By.XPATH, 
+                        "//a[contains(@class, 'pulse-checkBox') and (contains(@onclick, 'brojim') or contains(text(), 'Get Credits'))]"
+                    ))
+                )
                 human_sleep(1.5, 3.0)
-                if STOP_BOT: break
+                if STOP_BOT: 
+                    break
                 
-                parent_a = driver.execute_script("return arguments[0].parentNode;", confirm_btn)
-                driver.execute_script("arguments[0].click();", parent_a)
-                
+                driver.execute_script("arguments[0].click();", confirm_btn)
                 repetition_count += 1
+                
                 if debug_mode:
                     print(f"{G}[+] Point Claimed! Total: {repetition_count}/{target_limit}{W}")
                 else:
                     update_dashboard(data, repetition_count, target_limit)
-            except:
-                if debug_mode: print(f"{R}[!] Confirm failed.{W}")
+                
+            except Exception as conf_err:
+                if debug_mode: 
+                    print(f"{R}[!] Confirm failed: {conf_err}{W}")
+                
+                # Fallback: Jika klik via Selenium/DOM gagal, picu fungsi brojim() secara paksa via JS
+                try:
+                    driver.execute_script("""
+                        var btn = document.querySelector("a.pulse-checkBox[onclick*='brojim']");
+                        if (btn) { btn.click(); }
+                    """)
+                except:
+                    pass
 
             human_sleep(3, 6)
             
@@ -325,11 +344,14 @@ def auto_earn_logic(driver, social_name, debug_mode, target_limit):
 
 def run_automation(social_name, target_url, debug_mode, target_limit):
     data = load_data()
+    
+    # Indentasi disamakan persis menggunakan 4 spasi
     profile_path = data["accounts"][data["active_index"]]["path"]
+    
     options = Options()
-    options.add_argument("-profile")
-    options.add_argument(profile_path)
-    options.set_preference("dom.webdriver.enabled", False)
+    profile = FirefoxProfile(profile_path)
+    profile.set_preference("dom.webdriver.enabled", False)
+    options.profile = profile
     
     driver = webdriver.Firefox(options=options)
     try:
@@ -343,15 +365,18 @@ def run_automation(social_name, target_url, debug_mode, target_limit):
             input() 
             print(f"{G}[+] Saving new session cookies...{W}")
             cookies = driver.get_cookies()
-            with open(COOKIE_FILE, 'w') as f: json.dump(cookies, f)
+            with open(COOKIE_FILE, 'w') as f:
+                json.dump(cookies, f)
 
         driver.get(target_url)
         if "login.php" in driver.current_url:
-             print(f"{R}[!] Login failed. Exiting.{W}")
-             return
+            print(f"{R}[!] Login failed. Exiting.{W}")
+            return
 
-        if debug_mode: print(f"\n{G}[+] Login Verified. Starting Bot...{W}")
-        else: time.sleep(1)
+        if debug_mode:
+            print(f"\n{G}[+] Login Verified. Starting Bot...{W}")
+        else:
+            time.sleep(1)
             
         auto_earn_logic(driver, social_name, debug_mode, target_limit)
     finally:
